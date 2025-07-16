@@ -41,6 +41,9 @@ and acyclic graphs can be generated using the ``cdt.data.AcyclicGraphGenerator``
 .. SOFTWARE.
 """
 
-from .acyclic_graph_generator import AcyclicGraphGenerator
+from .acyclic_graph_generator import (
+    AcyclicGraphGenerator,
+    AcyclicGraphGeneratorTreatment,
+)
 from .causal_pair_generator import CausalPairGenerator
 from .loader import load_dataset

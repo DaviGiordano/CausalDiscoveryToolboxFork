@@ -1,7 +1,7 @@
 """Testing generators."""
 
 import networkx as nx
-from cdt.data import AcyclicGraphGenerator, CausalPairGenerator
+from cdt.data import AcyclicGraphGenerator, AcyclicGraphGeneratorTreatment, CausalPairGenerator
 from cdt.data.causal_mechanisms import gmm_cause, gaussian_cause
 import pandas as pd
 import os
@@ -62,6 +62,14 @@ def test_noises():
             data, agg = AcyclicGraphGenerator("linear", npoints=200, nodes=10, parents_max=3, noise=noise).generate()
             assert type(agg) == nx.DiGraph
             assert nx.is_directed_acyclic_graph(agg)
+
+
+def test_treatment_generator():
+    g = AcyclicGraphGeneratorTreatment('linear', npoints=200, nodes=10, parents_max=3)
+    data, agg = g.generate()
+    assert set(data['V0'].unique()).issubset({0, 1})
+    assert agg.in_degree('V0') == 0
+    assert nx.is_directed_acyclic_graph(agg)
 
 
 if __name__ == "__main__":

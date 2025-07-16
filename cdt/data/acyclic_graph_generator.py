@@ -196,3 +196,54 @@ class AcyclicGraphGenerator(object):
         else:
             raise ValueError("Graph has not yet been generated. \
                               Use self.generate() to do so.")
+
+
+class AcyclicGraphGeneratorTreatment(AcyclicGraphGenerator):
+    """Acyclic graph generator with a Bernoulli treatment variable.
+
+    This generator behaves like :class:`AcyclicGraphGenerator` but forces
+    one root node (by default ``V0``) to be a binary treatment sampled from
+    a Bernoulli distribution.
+    """
+
+    def __init__(self, *args, treatment_idx=0, treatment_p=0.5, **kwargs):
+        super(AcyclicGraphGeneratorTreatment, self).__init__(*args, **kwargs)
+        self.treatment_idx = treatment_idx
+        self.treatment_p = treatment_p
+
+    def init_variables(self, verbose=False):
+        """Initialize graph structure and mechanisms with treatment."""
+        self.init_dag(verbose)
+        # Ensure treatment variable is root
+        self.adjacency_matrix[:, self.treatment_idx] = 0
+
+        self.cfunctions = []
+        for i in range(self.nodes):
+            if sum(self.adjacency_matrix[:, i]):
+                self.cfunctions.append(
+                    self.mechanism(int(sum(self.adjacency_matrix[:, i])),
+                                   self.npoints, self.noise,
+                                   noise_coeff=self.noise_coeff))
+            else:
+                if i == self.treatment_idx:
+                    self.cfunctions.append(
+                        lambda points, self=self: np.random.binomial(
+                            1, self.treatment_p, points))
+                else:
+                    self.cfunctions.append(self.initial_generator)
+
+    def generate(self, rescale=True):
+        """Generate data while keeping treatment binary."""
+        if self.cfunctions is None:
+            self.init_variables()
+
+        for i in nx.topological_sort(self.g):
+            if not sum(self.adjacency_matrix[:, i]):
+                self.data[f'V{i}'] = self.cfunctions[i](self.npoints)
+            else:
+                self.data[f'V{i}'] = self.cfunctions[i](
+                    self.data.iloc[:, self.adjacency_matrix[:, i].nonzero()[0]].values)
+            if rescale and i != self.treatment_idx:
+                self.data[f'V{i}'] = scale(self.data[f'V{i}'].values)
+
+        return self.data, nx.relabel_nodes(self.g, {i: f'V{i}' for i in self.g.nodes}, copy=True)
