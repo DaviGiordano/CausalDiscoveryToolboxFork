@@ -1,4 +1,4 @@
-""" This module focusses on data: data generation but also provides the user
+"""This module focusses on data: data generation but also provides the user
 with standard and well known datasets, useful for validation and benchmarking.
 
 The generators provide the user the ability to choose which causal mechanism to
@@ -42,5 +42,6 @@ and acyclic graphs can be generated using the ``cdt.data.AcyclicGraphGenerator``
 """
 
 from .acyclic_graph_generator import AcyclicGraphGenerator
+from .acyclic_graph_generator_more_mechanisms import AcyclicGraphGeneratorMoreMechanisms
 from .causal_pair_generator import CausalPairGenerator
 from .loader import load_dataset
