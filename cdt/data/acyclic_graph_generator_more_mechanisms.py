@@ -8,6 +8,7 @@ from sklearn.preprocessing import scale
 
 from .acyclic_graph_generator import AcyclicGraphGenerator
 from .causal_mechanisms import (
+    Binary_Mechanism,
     GaussianProcessAdd_Mechanism,
     GaussianProcessMix_Mechanism,
     LinearMechanism,
@@ -15,7 +16,6 @@ from .causal_mechanisms import (
     Polynomial_Mechanism,
     SigmoidAM_Mechanism,
     SigmoidMix_Mechanism,
-    ThresholdBinary_Mechanism,
     bernoulli_cause,
     gaussian_cause,
     gmm_cause,
@@ -29,7 +29,7 @@ MECH_MAP = {
     "gp_add": GaussianProcessAdd_Mechanism,
     "gp_mix": GaussianProcessMix_Mechanism,
     "nn": NN_Mechanism,
-    "threshold_binary": ThresholdBinary_Mechanism,
+    "binary": Binary_Mechanism,
 }
 ROOT_GEN_MAP = {
     "gmm": gmm_cause,

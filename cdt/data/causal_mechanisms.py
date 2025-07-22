@@ -327,7 +327,7 @@ class NN_Mechanism(object):
         return effect
 
 
-class ThresholdBinary_Mechanism(object):
+class Binary_Mechanism(object):
     """
     Hard or stochastic threshold on a weighted sum of parents.
 
@@ -347,7 +347,7 @@ class ThresholdBinary_Mechanism(object):
         points,
         noise_function,
         noise_coeff=0.4,
-        logistic=False,
+        logistic=True,
         threshold=None,
     ):
         self.n_causes = ncauses
