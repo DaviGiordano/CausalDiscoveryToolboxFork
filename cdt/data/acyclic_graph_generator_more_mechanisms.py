@@ -76,6 +76,7 @@ class AcyclicGraphGeneratorMoreMechanisms(AcyclicGraphGenerator):
             else np.full(len(self.root_pool), 1 / len(self.root_pool))
         )
         self.rescale_bin = rescale_binary
+        self.chosen_binary_root = None
 
         super().__init__(
             causal_mechanism="linear",  # Placeholder
@@ -91,7 +92,9 @@ class AcyclicGraphGeneratorMoreMechanisms(AcyclicGraphGenerator):
 
     def _choose_binary_root(self) -> int:
         roots = np.where(~self.adjacency_matrix.any(axis=0))[0]
-        return np.random.choice(roots)
+        bin_root = np.random.choice(roots)
+        self.chosen_binary_root = f"V{bin_root}"
+        return bin_root
 
     def init_variables(self, verbose=False):
         self.init_dag(verbose)
@@ -128,7 +131,9 @@ class AcyclicGraphGeneratorMoreMechanisms(AcyclicGraphGenerator):
                 if mech_name == "threshold_binary":
                     self.variable_types[i] = "binary"
 
-    def generate(self, rescale=True, return_metadata=False):
+    def generate(
+        self, rescale=True, return_metadata=False
+    ) -> tuple[pd.DataFrame, nx.DiGraph, dict]:
         if self.cfunctions is None:
             self.init_variables()
         self.data = pd.DataFrame(
@@ -160,6 +165,7 @@ class AcyclicGraphGeneratorMoreMechanisms(AcyclicGraphGenerator):
                 adjacency_matrix=self.adjacency_matrix.copy(),
                 mechanisms=self.mechanism_assign,
                 variable_types=self.variable_types,
+                binary_root=self.chosen_binary_root,
             )
             return self.data, graph, meta
         return self.data, graph
